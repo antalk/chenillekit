@@ -14,6 +14,8 @@
 
 package org.chenillekit.tapestry.core.base;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.tapestry5.ClientElement;
 import org.apache.tapestry5.ComponentEventCallback;
 import org.apache.tapestry5.ComponentResources;
@@ -27,6 +29,7 @@ import org.apache.tapestry5.internal.util.Holder;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
+import org.chenillekit.tapestry.core.internal.EventMixin;
 
 import java.util.List;
 
@@ -93,23 +96,26 @@ abstract public class AbstractEventMixin implements EventMixin
 
 	void afterRender()
 	{
-		Link link = resources.createEventLink(EVENT_NAME, contextArray);
 		String id = clientElement.getClientId();
-
-		String jsString = "new Ck.OnEvent('%s', '%s', %b, '%s', '%s');";
-		String callBackString = resources.isBound("onCompleteCallback") ? onCompleteCallback : "";
-		boolean doStop = resources.isBound("stop") && stop;
-
-		javascriptSupport.addScript(jsString, getEventName(), id, doStop, link.toAbsoluteURI(), callBackString);
+		if (!StringUtils.isEmpty(id)) {
+			
+			final Link link = resources.createEventLink(EVENT_NAME, ArrayUtils.add(contextArray,id));
+			
+			String jsString = "new Ck.OnEvent('%s', '%s', %b, '%s', '%s');";
+			String callBackString = resources.isBound("onCompleteCallback") ? onCompleteCallback : "";
+			boolean doStop = resources.isBound("stop") && stop;
+	
+			javascriptSupport.addScript(jsString, getEventName(), id, doStop, link.toAbsoluteURI(), callBackString);
+		}
 	}
 
-	Object onInternalEvent()
+	Object onInternalEvent(Object[] context)
 	{
 		String input = request.getParameter(PARAM_NAME);
 
 		final Holder<Object> valueHolder = Holder.create();
 
-		ComponentEventCallback callback = new ComponentEventCallback<Object>()
+		ComponentEventCallback<Object> callback = new ComponentEventCallback<Object>()
 		{
 			public boolean handleResult(Object result)
 			{
@@ -117,9 +123,7 @@ abstract public class AbstractEventMixin implements EventMixin
 				return true;
 			}
 		};
-
-		resources.triggerEvent(getEventName(), new Object[]{input}, callback);
-
+		resources.triggerEvent(getEventName(), ArrayUtils.add(context, input), callback);
 		return valueHolder.get();
 	}
 }
