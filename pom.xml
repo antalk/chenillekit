@@ -208,7 +208,6 @@
 		<module>chenillekit-tapestry</module>
 		<module>chenillekit-lucene</module>
 		<module>chenillekit-access</module>
-		<module>chenillekit-demo</module>
 		<module>chenillekit-reports</module>
 		<module>chenillekit-template</module>
 		<module>chenillekit-google</module>
