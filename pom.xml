@@ -767,13 +767,20 @@
 
 		</profile>
 
+
 		<profile>
-			<id>ci-codehaus</id>
+			<id>ci-intercommit</id>
 			<distributionManagement>
+				<repository>
+				<id>releases</id>
+					<name>InterCommit Releases Repository</name>
+					<url>http://hudson.intercommit.local:8080/nexus/content/repositories/releases/</url>
+				</repository>
 				<snapshotRepository>
-					<id>chenillekit-ci-codehaus</id>
-					<name>Snapshot repository used from Bamboo at the Haus</name>
-					<url>file:///opt/ci.repository.codehaus.org/</url>
+					<id>snapshots</id>
+					<name>InterCommit Snapshots Repository</name>
+					<url>http://hudson.intercommit.local:8080/nexus/content/repositories/snapshots/</url>
+					<uniqueVersion>false</uniqueVersion>
 				</snapshotRepository>
 			</distributionManagement>
 		</profile>
