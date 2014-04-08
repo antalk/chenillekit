@@ -772,15 +772,9 @@
 			<distributionManagement>
 				<repository>
 				<id>releases</id>
-					<name>InterCommit Releases Repository</name>
-					<url>http://hudson.intercommit.local:8080/nexus/content/repositories/releases/</url>
+					<name>InterCommit 3rd Party Repository</name>
+					<url>http://hudson.intercommit.local:8080/nexus/content/repositories/thirdparty/</url>
 				</repository>
-				<snapshotRepository>
-					<id>snapshots</id>
-					<name>InterCommit Snapshots Repository</name>
-					<url>http://hudson.intercommit.local:8080/nexus/content/repositories/snapshots/</url>
-					<uniqueVersion>false</uniqueVersion>
-				</snapshotRepository>
 			</distributionManagement>
 		</profile>
 
