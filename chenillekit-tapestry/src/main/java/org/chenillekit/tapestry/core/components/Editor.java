@@ -23,6 +23,7 @@ import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.corelib.base.AbstractTextField;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.services.SymbolSource;
+import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.ClasspathAssetAliasManager;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
@@ -48,7 +49,7 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
  * @see <a href="http://docs.fckeditor.net/FCKeditor_2.x/Developers_Guide">FCKeditor developer's guide</a>
  * @see <a href="http://docs.fckeditor.net/FCKeditor_2.x/Users_Guide">FCKeditor user's guide</a>
  */
-@Import(library = "fckeditor/fckeditor.js")
+@Import(library = {"fckeditor/fckeditor.js", "Editor.js"})
 public class Editor extends AbstractTextField
 {
 	/**
@@ -118,28 +119,24 @@ public class Editor extends AbstractTextField
 
 	final void writeScript()
 	{
-		String editorVar = "editor_" + getClientId().replace('-', '_');
-
 		String fckEditorBasePath = cpam.toClientURL(symbolSource.expandSymbols("${ck.components}")) + "/fckeditor/";
 
-		javascriptSupport.addScript("var %s = new FCKeditor('%s');", editorVar, getClientId());
-		javascriptSupport.addScript("%s.BasePath = '%s';", editorVar, fckEditorBasePath);
-
+		JSONObject params = new JSONObject();
+		params.put("CLIENT_ID", getClientId());
+		params.put("BASE_PATH", fckEditorBasePath);
+		params.put("HEIGHT", height);
+		params.put("WIDTH", width);
 		if (customConfiguration != null)
 		{
-			javascriptSupport.addScript("%s.Config['CustomConfigurationsPath'] = '%s';",
-										editorVar,
-										getCustomizedConfigurationURL(customConfiguration));
+			params.put("CUSTOM_CONFIG_PATH", getCustomizedConfigurationURL(customConfiguration));
 		}
 
 		if (toolbarSet != null)
 		{
-			javascriptSupport.addScript("%s.ToolbarSet = '%s';", editorVar, toolbarSet);
+			params.put("TOOLBAR_SET", toolbarSet);
 		}
 
-		javascriptSupport.addScript("%s.Height = '%s';", editorVar, height);
-		javascriptSupport.addScript("%s.Width = '%s';", editorVar, width);
-		javascriptSupport.addScript("%s.ReplaceTextarea();", editorVar);
+		javascriptSupport.addInitializerCall("CK_FCKEditor", params);
 	}
 
 	/**
